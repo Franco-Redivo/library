@@ -1,27 +1,42 @@
-const myLibrary = [];
+class Book{
+    constructor(title, author, pages, read){
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
+    toggleReadStatus(){
+        this.read = this.read === "read" ? "not read yet" : "read";
+    }
+}
 
-function Book(title, author, pages, read){
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
+class Library{
+    constructor(){
+        this.books = [];
+    }
+    getBooks(){
+        return this.books;
+    }
+    addBook(book){
+        this.books.push(book);
+    }
+    removeBook(title){
+        this.books = this.books.filter(book => book.title !== title);
+    }
 }
 
 const hobit = new Book('Hobit', 'J.R.R. Tolkien', 295, 'not read yet');
 const harryPotter = new Book('Harry Potter', 'J.K. Rowling', 400, 'read');
 
-function addBookToLibrary(book){
-    myLibrary.push(book);
-}
-
-addBookToLibrary(hobit);
-addBookToLibrary(harryPotter);
+const myLibrary = new Library();
+myLibrary.addBook(hobit);
+myLibrary.addBook(harryPotter);
 
 const container = document.querySelector(".wrapper");
 
 
 function displayBooks(){
-    myLibrary.forEach(book => {
+    myLibrary.getBooks().forEach(book => {
         const card = document.createElement("div");
         card.classList.add("card");
         card.innerHTML = `
@@ -41,8 +56,7 @@ function displayBooks(){
         button.addEventListener("click", (e) => {
             const card = e.target.parentElement;
             const title = card.querySelector("h2").textContent;
-            const index = myLibrary.findIndex(book => book.title === title);
-            myLibrary.splice(index, 1);
+            myLibrary.removeBook(title);
             container.innerHTML = "";
             displayBooks();
         });
@@ -52,14 +66,8 @@ function displayBooks(){
         button.addEventListener("click", (e) => {
             const card = e.target.parentElement;
             const title = card.querySelector("h2").textContent;
-            const book = myLibrary.find(book => book.title === title);
-            if(book.read === "read"){
-                delete book.read;
-                book.read = "not read yet";
-            }else{
-                delete book.read;
-                book.read = "read";
-            }
+            const book = myLibrary.getBooks().find(book => book.title === title);
+            book.toggleReadStatus();
             container.innerHTML = "";
             displayBooks();
         });
@@ -102,7 +110,7 @@ confirmButton.addEventListener("click", (e) => {
     }
 
     const newBook = new Book(title, author, pages, read);
-    addBookToLibrary(newBook);
+    myLibrary.addBook(newBook);
 
     container.innerHTML = "";
     displayBooks();
